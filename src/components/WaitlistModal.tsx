@@ -84,9 +84,9 @@ export function WaitlistModal() {
 
             <button 
               onClick={closeModal}
-              className="absolute top-5 right-5 p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all z-10"
+              className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 bg-slate-50/50 hover:bg-white border border-slate-100/50 hover:border-slate-200 rounded-full transition-all z-10 shadow-sm hover:shadow-md group"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
             </button>
 
             <div className="p-5 sm:p-6 overflow-y-auto">

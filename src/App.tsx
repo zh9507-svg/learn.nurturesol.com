@@ -1,5 +1,5 @@
-import React, { ReactNode, useState } from 'react';
-import { motion } from 'motion/react';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { WaitlistModal } from './components/WaitlistModal';
 import { 
   CheckCircle2, 
@@ -27,6 +27,101 @@ interface FadeInProps {
   delay?: number;
   className?: string;
 }
+
+const HERO_IMAGES = [
+  "https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b332a7b4eb4d2db46b68c4.png",
+  "https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b3372e005051334d3bcaa8.png",
+  "https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b335f7ef84872100cf76e4.png",
+  "https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b3372ee8487cc82153834f.png",
+  "https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b3372ebfc81feefdcbfb33.png"
+];
+
+const ImageCarousel = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="relative w-full h-full overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={currentIndex}
+          src={HERO_IMAGES[currentIndex]}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const AnnouncementBar = () => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date('2026-04-25T23:59:59').getTime();
+    
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+      
+      if (distance < 0) {
+        clearInterval(timer);
+        return;
+      }
+      
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const announcements = [
+    "🔥 Only 12 spots remaining for Batch 1. Apply before they're gone.",
+    "🚀 247 applications received in the last 48 hours.",
+    "💎 Batch 1 is 100% FREE. Batch 2 will be $1,997.",
+    `⏳ Deadline: ${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s remaining`
+  ];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const cycleTimer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % announcements.length);
+    }, 4000);
+    return () => clearInterval(cycleTimer);
+  }, [announcements.length]);
+
+  return (
+    <div className="fixed top-0 left-0 right-0 h-10 bg-slate-900 text-white flex items-center justify-center overflow-hidden px-4 z-[60]">
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={`${index}-${index === 3 ? timeLeft.seconds : ''}`}
+          initial={index === 3 ? false : { y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={index === 3 ? { opacity: 1 } : { y: -20, opacity: 0 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-center"
+        >
+          {announcements[index]}
+        </motion.p>
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const FadeIn: React.FC<FadeInProps> = ({ children, delay = 0, className = "" }) => (
   <motion.div
@@ -97,9 +192,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-paper text-slate-900 overflow-x-hidden font-sans">
+      <AnnouncementBar />
       <WaitlistModal />
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-white/20">
+      <nav className="fixed top-10 left-0 right-0 z-50 glass-card border-b border-white/20">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
             <img src="https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b1f62c78565a0a5a4f85bc.png" alt="NurtureSol Icon" className="h-6 md:h-8 object-contain" referrerPolicy="no-referrer" />
@@ -121,7 +217,7 @@ export default function App() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-[100dvh] flex items-center pt-24 lg:pt-28 pb-12 px-6 overflow-hidden">
+      <section className="relative min-h-[100dvh] flex items-center pt-32 lg:pt-40 pb-12 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-mesh -z-10"></div>
         <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <FadeIn>
@@ -149,9 +245,22 @@ export default function App() {
               </div>
             </div>
             <p className="text-xs text-slate-400 mt-6 font-medium">
-              Applications close when I find 30 committed people. Or April 15. Whichever comes first.
+              Applications close when I find 30 committed people. Or April 25. Whichever comes first.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-white/60 backdrop-blur-sm p-4 rounded-[2rem] border border-slate-200/60 shadow-sm w-full sm:w-max">
+          </FadeIn>
+          
+          <FadeIn delay={0.2} className="relative mt-8 lg:mt-0">
+            <div className="absolute -inset-4 bg-nurture-gradient opacity-20 blur-3xl rounded-[3rem]"></div>
+            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/60 aspect-video hidden md:block">
+              <ImageCarousel />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
+            </div>
+            {/* Mobile Hero Image */}
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/40 aspect-video md:hidden">
+              <ImageCarousel />
+            </div>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 bg-white/60 backdrop-blur-sm p-4 md:p-6 rounded-[2rem] border border-slate-200/60 shadow-sm w-full mx-auto lg:mx-0">
               <div className="flex items-center gap-4 w-full sm:w-auto justify-center sm:justify-start pb-4 sm:pb-0 border-b sm:border-b-0 sm:pr-4 border-slate-200">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Mastering:</span>
                 <img src="https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b1f3e68cb2596aef4c825d.png" alt="GoHighLevel" className="h-6 lg:h-8 object-contain" referrerPolicy="no-referrer" />
@@ -163,28 +272,6 @@ export default function App() {
                   <span className="text-xs font-black text-slate-900 uppercase">Certified Admin</span>
                 </div>
               </div>
-            </div>
-          </FadeIn>
-          
-          <FadeIn delay={0.2} className="relative mt-8 lg:mt-0">
-            <div className="absolute -inset-4 bg-nurture-gradient opacity-20 blur-3xl rounded-[3rem]"></div>
-            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/60 aspect-[4/3] lg:aspect-square hidden md:block">
-              <img 
-                src="https://picsum.photos/seed/workspace/1920/1080?blur=2" 
-                alt="Authentic workspace with GHL dashboard" 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
-            </div>
-            {/* Mobile Hero Image */}
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/40 aspect-[16/9] md:hidden">
-              <img 
-                src="https://picsum.photos/seed/typing/800/1200" 
-                alt="Hands typing on laptop" 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
             </div>
           </FadeIn>
         </div>
@@ -201,8 +288,13 @@ export default function App() {
             </span>
           </FadeIn>
           
-          <FadeIn delay={0.1} className="flex items-center justify-center bg-white/10 p-3 rounded-full border border-white/10">
-            <XCircle className="w-6 h-6 text-slate-400" />
+          <FadeIn delay={0.1} className="flex items-center justify-center">
+            <img 
+              src="https://assets.cdn.filesafe.space/MOufmG93fJ08yYYcm5D2/media/69b330a8eba4879340fe9240.png" 
+              alt="x" 
+              className="w-[60px] h-[60px] object-contain opacity-40 brightness-0 invert" 
+              referrerPolicy="no-referrer" 
+            />
           </FadeIn>
           
           <FadeIn delay={0.2} className="flex items-center justify-center">
@@ -946,7 +1038,7 @@ export default function App() {
             </a>
             
             <p className="text-slate-400 text-sm mb-12">
-              Applications close April 15 or when 30 people are selected.<br/>
+              Applications close April 25 or when 30 people are selected.<br/>
               Whichever comes first.
             </p>
 
