@@ -135,6 +135,19 @@ const FadeIn: React.FC<FadeInProps> = ({ children, delay = 0, className = "" }) 
   </motion.div>
 );
 
+const InlineCTA = ({ text = "Apply for Batch 1", subtext = "30 spots. Not first-come-first-served." }) => (
+  <section className="py-12 px-6 bg-slate-50">
+    <div className="max-w-4xl mx-auto text-center">
+      <FadeIn>
+        <a href="#apply" className="inline-flex items-center gap-3 bg-slate-900 text-white px-10 py-5 rounded-full font-bold text-xl hover:shadow-xl hover:shadow-slate-900/20 transition-all transform hover:-translate-y-1 mb-4">
+          {text} <ArrowRight className="w-6 h-6" />
+        </a>
+        <p className="text-slate-500 text-sm font-medium">{subtext}</p>
+      </FadeIn>
+    </div>
+  </section>
+);
+
 const Divider = () => (
   <div className="w-full flex justify-center py-8 opacity-30">
     <svg width="200" height="12" viewBox="0 0 200 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -145,6 +158,7 @@ const Divider = () => (
 
 export default function App() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -156,6 +170,16 @@ export default function App() {
 
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic phone number validation
+    const phoneRegex = /^[\d\s\+\-\(\)]{7,}$/;
+    if (!phoneRegex.test(formData.whatsapp)) {
+      setStatus('error');
+      setErrorMessage('Please enter a valid WhatsApp phone number.');
+      return;
+    }
+
+    setErrorMessage(null);
     setStatus('submitting');
 
     // Fire and forget: send the data without waiting for a response
@@ -384,6 +408,8 @@ export default function App() {
         </div>
       </section>
 
+      <InlineCTA />
+
       <Divider />
 
       {/* The 4 Weeks */}
@@ -525,6 +551,8 @@ export default function App() {
         </div>
       </section>
 
+      <InlineCTA text="I'm ready to build" subtext="Join 29 other builders starting May 1." />
+
       <Divider />
 
       {/* Who This Is For */}
@@ -590,6 +618,8 @@ export default function App() {
           </FadeIn>
         </div>
       </section>
+
+      <InlineCTA text="Apply Now" subtext="Applications close April 25." />
 
       <Divider />
 
@@ -671,6 +701,8 @@ export default function App() {
           </FadeIn>
         </div>
       </section>
+
+      <InlineCTA text="Secure your spot" subtext="Batch 1 is 100% free." />
 
       <Divider />
 
@@ -868,7 +900,7 @@ export default function App() {
 
                 {status === 'error' && (
                   <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm text-center font-medium">
-                    Something went wrong. Please try again.
+                    {errorMessage || 'Something went wrong. Please try again.'}
                   </div>
                 )}
 
@@ -961,6 +993,8 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      <InlineCTA text="Join the experiment" subtext="No certificates. Just skills." />
 
       <Divider />
 

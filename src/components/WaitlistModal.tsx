@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 export function WaitlistModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,6 +29,16 @@ export function WaitlistModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Basic phone number validation
+    const phoneRegex = /^[\d\s\+\-\(\)]{7,}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setStatus('error');
+      setErrorMessage('Please enter a valid WhatsApp phone number.');
+      return;
+    }
+
+    setErrorMessage(null);
     setStatus('submitting');
 
     // Fire and forget: send the data without waiting for a response
@@ -234,7 +245,7 @@ export function WaitlistModal() {
 
                   {status === 'error' && (
                     <div className="p-2 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs text-center font-medium">
-                      Something went wrong. Please try again.
+                      {errorMessage || 'Something went wrong. Please try again.'}
                     </div>
                   )}
 
