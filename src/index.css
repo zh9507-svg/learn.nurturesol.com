@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-nurture-teal: #3CBFBF;
+  --color-nurture-green: #688E45;
+  --color-bg-light: #fcfcfc;
+  --color-text-dark: #0f172a;
+}
+
+@layer utilities {
+  .text-nurture-gradient {
+    background: linear-gradient(135deg, var(--color-nurture-teal) 0%, var(--color-nurture-green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .bg-nurture-gradient {
+    background: linear-gradient(135deg, var(--color-nurture-teal) 0%, var(--color-nurture-green) 100%);
+  }
+  .bg-mesh {
+    background-color: var(--color-bg-light);
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(60, 191, 191, 0.04) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(104, 142, 69, 0.04) 0px, transparent 50%);
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  .bg-paper {
+    background-color: #fbfbf9;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-dark);
+}
